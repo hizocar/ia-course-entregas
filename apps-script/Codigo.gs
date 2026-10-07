@@ -260,13 +260,31 @@ function _csv(v) {
   return '"' + String(v).replace(/"/g, '""') + '"';
 }
 
-/** Imprime las URLs de los nueve buzones, listas para pegar en el sitio del curso. */
+/**
+ * Imprime las URLs de los nueve buzones, listas para pegar en el sitio del curso.
+ *
+ * Ojo: ejecutada desde el editor, Apps Script devuelve la URL de PRUEBA (termina en /dev), que
+ * solo funciona para ti y con sesión iniciada. La URL que va al sitio es la de producción
+ * (termina en /exec) y se copia desde Implementar → Administrar implementaciones.
+ */
 function listarBuzones() {
-  const base = ScriptApp.getService().getUrl();
+  let base = ScriptApp.getService().getUrl();
   if (!base) {
-    Logger.log('Primero despliega el proyecto como aplicación web (Implementar → Nueva implementación).');
+    Logger.log('Todavía no hay despliegue. Implementar → Nueva implementación → Aplicación web.');
     return;
   }
+
+  if (base.slice(-4) === '/dev') {
+    Logger.log('⚠️  Esta es la URL de PRUEBA (/dev): solo funciona para ti.');
+    Logger.log('⚠️  Copia la URL de producción (/exec) desde Implementar → Administrar implementaciones');
+    Logger.log('⚠️  y pégala abajo en BASE_EXEC para que este listado imprima las URLs definitivas.');
+    Logger.log('');
+  }
+
+  // Pega aquí la URL /exec (sin parámetros) para imprimir las URLs definitivas.
+  const BASE_EXEC = '';
+  if (BASE_EXEC) base = BASE_EXEC.replace(/\?.*$/, '');
+
   AVANCES.forEach(function (a) {
     Logger.log(a.id + '  →  ' + base + '?a=' + a.id);
   });
